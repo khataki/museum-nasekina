@@ -1,23 +1,39 @@
 import express from 'express';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import pool from '../config/db.js';
 
 const router = express.Router();
 
-// Вход администратора
+// Middleware для проверки JWT токена
+export const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ 
+      success: false, 
+      message: 'Требуется авторизация' 
+    });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Невалидный токен' 
+      });
+    }
+    req.user = user;
+    next();
+  });
+};
+
+// Логин
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    if (!username || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Требуется имя пользователя и пароль'
-      });
-    }
-
-    // Поиск пользователя
     const result = await pool.query(
       'SELECT * FROM admins WHERE username = $1',
       [username]
@@ -26,23 +42,20 @@ router.post('/login', async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(401).json({
         success: false,
-        message: 'Неверное имя пользователя или пароль'
+        message: 'Неверный логин или пароль'
       });
     }
 
     const admin = result.rows[0];
+    const validPassword = await bcrypt.compare(password, admin.password_hash);
 
-    // Проверка пароля
-    const isValidPassword = await bcrypt.compare(password, admin.password_hash);
-
-    if (!isValidPassword) {
+    if (!validPassword) {
       return res.status(401).json({
         success: false,
-        message: 'Неверное имя пользователя или пароль'
+        message: 'Неверный логин или пароль'
       });
     }
 
-    // Создание JWT токена
     const token = jwt.sign(
       { id: admin.id, username: admin.username },
       process.env.JWT_SECRET,
@@ -57,9 +70,8 @@ router.post('/login', async (req, res) => {
         username: admin.username
       }
     });
-
   } catch (error) {
-    console.error('Ошибка при входе:', error);
+    console.error('Ошибка логина:', error);
     res.status(500).json({
       success: false,
       message: 'Ошибка сервера'
@@ -67,29 +79,12 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Middleware для проверки JWT
-export const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: 'Токен не предоставлен'
-    });
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).json({
-        success: false,
-        message: 'Недействительный токен'
-      });
-    }
-
-    req.user = user;
-    next();
+// Проверка токена
+router.get('/verify', authenticateToken, (req, res) => {
+  res.json({
+    success: true,
+    user: req.user
   });
-};
+});
 
 export default router;
