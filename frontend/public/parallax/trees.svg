@@ -1,0 +1,16 @@
+<svg width="1920" height="800" viewBox="0 0 1920 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ели -->
+  <g opacity="0.8">
+    <polygon points="150,500 100,600 200,600" fill="#2F5233"/>
+    <polygon points="150,450 90,570 210,570" fill="#3D6B40"/>
+    <rect x="145" y="600" width="10" height="50" fill="#5D4037"/>
+    
+    <polygon points="800,400 750,500 850,500" fill="#2F5233"/>
+    <polygon points="800,350 740,470 860,470" fill="#3D6B40"/>
+    <rect x="795" y="500" width="10" height="60" fill="#5D4037"/>
+    
+    <polygon points="1600,450 1550,550 1650,550" fill="#2F5233"/>
+    <polygon points="1600,400 1540,520 1660,520" fill="#3D6B40"/>
+    <rect x="1595" y="550" width="10" height="55" fill="#5D4037"/>
+  </g>
+</svg>

@@ -170,3 +170,44 @@
     animation-delay: 600ms;
   }
 }
+
+/* === GLASSMORPHISM КАРТОЧКИ === */
+.glass-card {
+  @apply backdrop-blur-lg bg-white/40 rounded-2xl border border-white/50 shadow-xl;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2));
+}
+
+.glass-card-hover {
+  @apply glass-card transition-all duration-300 hover:bg-white/50 hover:shadow-2xl hover:scale-[1.02];
+}
+
+/* === ОБНОВЛЕННЫЕ ГРАДИЕНТЫ === */
+.gradient-crimson {
+  background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
+}
+
+.gradient-gold {
+  background: linear-gradient(135deg, #d97706 0%, #ca8a04 100%);
+}
+
+.gradient-warm {
+  background: linear-gradient(135deg, #fef8f0 0%, #fde68a 100%);
+}
+
+/* === АНИМИРОВАННЫЕ ОРНАМЕНТЫ === */
+@keyframes draw-ornament {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.ornament-animated {
+  animation: draw-ornament 2s ease-out forwards;
+}
+
+/* === УЛУЧШЕННЫЕ ТЕНИ === */
+.shadow-ornament {
+  box-shadow: 
+    0 10px 30px -5px rgba(185, 28, 28, 0.3),
+    0 0 0 1px rgba(185, 28, 28, 0.05);
+}
