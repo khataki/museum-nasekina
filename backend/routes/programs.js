@@ -4,13 +4,12 @@ import { authenticateToken } from './auth.js';
 
 const router = express.Router();
 
-// Получить все активные программы (публичный доступ)
+// Получить все активные программы
 router.get('/', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT * FROM programs WHERE is_active = true ORDER BY id ASC'
+      'SELECT * FROM programs WHERE is_active = true ORDER BY created_at DESC'
     );
-
     res.json(result.rows);
   } catch (error) {
     console.error('Ошибка получения программ:', error);
@@ -21,11 +20,10 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Получить программу по ID (публичный доступ)
+// Получить одну программу по ID
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-
     const result = await pool.query(
       'SELECT * FROM programs WHERE id = $1 AND is_active = true',
       [id]
@@ -48,23 +46,46 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Создать новую программу (требуется авторизация)
+// Создать программу
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { title, description, duration, price, maxParticipants, imageUrl } = req.body;
-
-    if (!title || !description || !duration || !price || !maxParticipants) {
-      return res.status(400).json({
-        success: false,
-        message: 'Не все обязательные поля заполнены'
-      });
-    }
+    const { 
+      title, 
+      description, 
+      detailed_description,
+      requirements,
+      duration, 
+      price, 
+      maxParticipants, 
+      imageUrl,
+      gallery 
+    } = req.body;
 
     const result = await pool.query(
-      `INSERT INTO programs (title, description, duration, price, max_participants, image_url)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING *`,
-      [title, description, duration, price, maxParticipants, imageUrl || null]
+      `INSERT INTO programs (
+        title, 
+        description, 
+        detailed_description,
+        requirements,
+        duration, 
+        price, 
+        max_participants, 
+        image_url,
+        gallery
+      ) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+      RETURNING *`,
+      [
+        title, 
+        description, 
+        detailed_description || null,
+        requirements || null,
+        duration, 
+        price, 
+        maxParticipants, 
+        imageUrl || null,
+        JSON.stringify(gallery || [])
+      ]
     );
 
     res.status(201).json({
@@ -80,24 +101,49 @@ router.post('/', authenticateToken, async (req, res) => {
   }
 });
 
-// Обновить программу (требуется авторизация)
+// Обновить программу
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, duration, price, maxParticipants, imageUrl, isActive } = req.body;
+    const { 
+      title, 
+      description, 
+      detailed_description,
+      requirements,
+      duration, 
+      price, 
+      maxParticipants, 
+      imageUrl,
+      gallery 
+    } = req.body;
 
     const result = await pool.query(
       `UPDATE programs 
-       SET title = COALESCE($1, title),
-           description = COALESCE($2, description),
-           duration = COALESCE($3, duration),
-           price = COALESCE($4, price),
-           max_participants = COALESCE($5, max_participants),
-           image_url = COALESCE($6, image_url),
-           is_active = COALESCE($7, is_active)
-       WHERE id = $8
+       SET 
+         title = $1, 
+         description = $2, 
+         detailed_description = $3,
+         requirements = $4,
+         duration = $5, 
+         price = $6, 
+         max_participants = $7, 
+         image_url = $8,
+         gallery = $9,
+         updated_at = CURRENT_TIMESTAMP
+       WHERE id = $10 
        RETURNING *`,
-      [title, description, duration, price, maxParticipants, imageUrl, isActive, id]
+      [
+        title, 
+        description, 
+        detailed_description || null,
+        requirements || null,
+        duration, 
+        price, 
+        maxParticipants, 
+        imageUrl || null,
+        JSON.stringify(gallery || []),
+        id
+      ]
     );
 
     if (result.rows.length === 0) {
@@ -120,14 +166,13 @@ router.put('/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// Удалить программу (требуется авторизация)
+// Удалить программу (мягкое удаление)
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-
-    // Мягкое удаление - помечаем как неактивную
+    
     const result = await pool.query(
-      'UPDATE programs SET is_active = false WHERE id = $1 RETURNING *',
+      'UPDATE programs SET is_active = false WHERE id = $1 RETURNING id',
       [id]
     );
 

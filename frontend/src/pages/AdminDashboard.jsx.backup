@@ -3,28 +3,22 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ImageUpload from '../components/ImageUpload';
-import GalleryUpload from '../components/GalleryUpload';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('programs');
+  const [activeTab, setActiveTab] = useState('programs'); // programs или gallery
   const [programs, setPrograms] = useState([]);
   const [galleryItems, setGalleryItems] = useState([]);
-  const [news, setNews] = useState([]);
   const [currentProgram, setCurrentProgram] = useState(null);
   const [currentGalleryItem, setCurrentGalleryItem] = useState(null);
-  const [currentNews, setCurrentNews] = useState(null);
   
   const [programFormData, setProgramFormData] = useState({
     title: '',
     description: '',
-    detailed_description: '',
-    requirements: '',
     duration: '',
     price: '',
     maxParticipants: '',
     imageUrl: '',
-    gallery: [],
   });
 
   const [galleryFormData, setGalleryFormData] = useState({
@@ -33,14 +27,6 @@ const AdminDashboard = () => {
     category: 'Интерьеры',
     imageUrl: '',
     displayOrder: 0,
-  });
-
-  const [newsFormData, setNewsFormData] = useState({
-    title: '',
-    excerpt: '',
-    content: '',
-    imageUrl: '',
-    isPublished: true,
   });
 
   useEffect(() => {
@@ -52,7 +38,6 @@ const AdminDashboard = () => {
     
     fetchPrograms();
     fetchGalleryItems();
-    fetchNews();
   }, [navigate]);
 
   const fetchPrograms = async () => {
@@ -76,18 +61,6 @@ const AdminDashboard = () => {
     }
   };
 
-  const fetchNews = async () => {
-    try {
-      const token = localStorage.getItem('adminToken');
-      const response = await axios.get('/api/news/admin/all', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setNews(response.data);
-    } catch (error) {
-      console.error('Ошибка загрузки новостей:', error);
-    }
-  };
-
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
     navigate('/admin');
@@ -99,13 +72,10 @@ const AdminDashboard = () => {
     setProgramFormData({
       title: program.title,
       description: program.description,
-      detailed_description: program.detailed_description || '',
-      requirements: program.requirements || '',
       duration: program.duration,
       price: program.price,
       maxParticipants: program.max_participants,
       imageUrl: program.image_url || '',
-      gallery: program.gallery || [],
     });
   };
 
@@ -145,13 +115,10 @@ const AdminDashboard = () => {
       setProgramFormData({
         title: '',
         description: '',
-        detailed_description: '',
-        requirements: '',
         duration: '',
         price: '',
         maxParticipants: '',
         imageUrl: '',
-        gallery: [],
       });
       fetchPrograms();
     } catch (error) {
@@ -173,13 +140,10 @@ const AdminDashboard = () => {
     setProgramFormData({
       title: '',
       description: '',
-      detailed_description: '',
-      requirements: '',
       duration: '',
       price: '',
       maxParticipants: '',
       imageUrl: '',
-      gallery: [],
     });
   };
 
@@ -261,93 +225,7 @@ const AdminDashboard = () => {
     });
   };
 
-  // === НОВОСТИ ===
-  const handleEditNews = (newsItem) => {
-    setCurrentNews(newsItem);
-    setNewsFormData({
-      title: newsItem.title,
-      excerpt: newsItem.excerpt || '',
-      content: newsItem.content,
-      imageUrl: newsItem.image_url || '',
-      isPublished: newsItem.is_published,
-    });
-  };
-
-  const handleDeleteNews = async (id) => {
-    if (!window.confirm('Вы уверены, что хотите удалить эту новость?')) {
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('adminToken');
-      await axios.delete(`/api/news/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      fetchNews();
-    } catch (error) {
-      console.error('Ошибка удаления:', error);
-      alert('Не удалось удалить новость');
-    }
-  };
-
-  const handleNewsSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const token = localStorage.getItem('adminToken');
-      const config = {
-        headers: { Authorization: `Bearer ${token}` }
-      };
-
-      if (currentNews) {
-        await axios.put(`/api/news/${currentNews.id}`, newsFormData, config);
-      } else {
-        await axios.post('/api/news', newsFormData, config);
-      }
-      
-      setCurrentNews(null);
-      setNewsFormData({
-        title: '',
-        excerpt: '',
-        content: '',
-        imageUrl: '',
-        isPublished: true,
-      });
-      fetchNews();
-    } catch (error) {
-      console.error('Ошибка сохранения:', error);
-      alert('Не удалось сохранить новость');
-    }
-  };
-
-  const handleNewsChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setNewsFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
-
-  const handleNewsCancel = () => {
-    setCurrentNews(null);
-    setNewsFormData({
-      title: '',
-      excerpt: '',
-      content: '',
-      imageUrl: '',
-      isPublished: true,
-    });
-  };
-
   const categories = ['Интерьеры', 'Экспонаты', 'Текстиль', 'Ремёсла', 'Мероприятия'];
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('ru-RU', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
 
   return (
     <div className="min-h-screen bg-cream-50 py-8">
@@ -386,16 +264,6 @@ const AdminDashboard = () => {
           >
             🖼️ Галерея
           </button>
-          <button
-            onClick={() => setActiveTab('news')}
-            className={`px-6 py-3 rounded-md font-semibold transition-all ${
-              activeTab === 'news'
-                ? 'bg-crimson-700 text-white'
-                : 'bg-white text-crimson-700 border-2 border-crimson-300'
-            }`}
-          >
-            📰 Новости
-          </button>
         </div>
 
         {/* ПРОГРАММЫ */}
@@ -405,7 +273,7 @@ const AdminDashboard = () => {
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="folk-card p-6 sticky top-8 max-h-[calc(100vh-100px)] overflow-y-auto"
+                className="folk-card p-6 sticky top-8"
               >
                 <h2 className="text-2xl font-display font-bold text-crimson-800 mb-6">
                   {currentProgram ? 'Редактировать программу' : 'Новая программа'}
@@ -431,46 +299,16 @@ const AdminDashboard = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Краткое описание *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Описание *</label>
                     <textarea
                       name="description"
                       required
-                      rows="3"
+                      rows="4"
                       value={programFormData.description}
                       onChange={handleProgramChange}
                       className="w-full px-4 py-2 border-2 border-crimson-300 rounded-md focus:border-crimson-600 focus:ring-2 focus:ring-crimson-200 resize-none"
-                      placeholder="Для карточки на странице программ"
                     ></textarea>
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Подробное описание</label>
-                    <textarea
-                      name="detailed_description"
-                      rows="6"
-                      value={programFormData.detailed_description}
-                      onChange={handleProgramChange}
-                      className="w-full px-4 py-2 border-2 border-crimson-300 rounded-md focus:border-crimson-600 focus:ring-2 focus:ring-crimson-200 resize-none"
-                      placeholder="Детальная информация для страницы программы"
-                    ></textarea>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Что взять с собой</label>
-                    <textarea
-                      name="requirements"
-                      rows="3"
-                      value={programFormData.requirements}
-                      onChange={handleProgramChange}
-                      className="w-full px-4 py-2 border-2 border-crimson-300 rounded-md focus:border-crimson-600 focus:ring-2 focus:ring-crimson-200 resize-none"
-                      placeholder="Требования и рекомендации для участников"
-                    ></textarea>
-                  </div>
-
-                  <GalleryUpload
-                    images={programFormData.gallery}
-                    onImagesChange={(images) => setProgramFormData(prev => ({ ...prev, gallery: images }))}
-                  />
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Длительность *</label>
@@ -570,9 +408,6 @@ const AdminDashboard = () => {
                           <span>⏱️ {program.duration}</span>
                           <span>💰 {program.price}</span>
                           <span>👥 до {program.max_participants} чел</span>
-                          {program.gallery && program.gallery.length > 0 && (
-                            <span>🖼️ {program.gallery.length} фото</span>
-                          )}
                         </div>
                       </div>
                     </div>
@@ -702,156 +537,6 @@ const AdminDashboard = () => {
                     <div className="p-4">
                       <h3 className="font-display font-bold text-crimson-800 mb-1">{item.title}</h3>
                       <p className="text-sm text-gray-600">{item.category}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* НОВОСТИ */}
-        {activeTab === 'news' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-1">
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="folk-card p-6 sticky top-8 max-h-[calc(100vh-100px)] overflow-y-auto"
-              >
-                <h2 className="text-2xl font-display font-bold text-crimson-800 mb-6">
-                  {currentNews ? 'Редактировать новость' : 'Новая новость'}
-                </h2>
-
-                <form onSubmit={handleNewsSubmit} className="space-y-4">
-                  <ImageUpload
-                    currentImage={newsFormData.imageUrl}
-                    onImageUploaded={(url) => setNewsFormData(prev => ({ ...prev, imageUrl: url }))}
-                    type="programs"
-                  />
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Заголовок *</label>
-                    <input
-                      type="text"
-                      name="title"
-                      required
-                      value={newsFormData.title}
-                      onChange={handleNewsChange}
-                      className="w-full px-4 py-2 border-2 border-crimson-300 rounded-md focus:border-crimson-600 focus:ring-2 focus:ring-crimson-200"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Краткое описание</label>
-                    <textarea
-                      name="excerpt"
-                      rows="2"
-                      value={newsFormData.excerpt}
-                      onChange={handleNewsChange}
-                      className="w-full px-4 py-2 border-2 border-crimson-300 rounded-md focus:border-crimson-600 focus:ring-2 focus:ring-crimson-200 resize-none"
-                      placeholder="Короткое описание для превью"
-                    ></textarea>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Содержание *</label>
-                    <textarea
-                      name="content"
-                      required
-                      rows="10"
-                      value={newsFormData.content}
-                      onChange={handleNewsChange}
-                      className="w-full px-4 py-2 border-2 border-crimson-300 rounded-md focus:border-crimson-600 focus:ring-2 focus:ring-crimson-200 resize-none"
-                      placeholder="Полный текст новости"
-                    ></textarea>
-                  </div>
-
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="isPublished"
-                      id="isPublished"
-                      checked={newsFormData.isPublished}
-                      onChange={handleNewsChange}
-                      className="w-4 h-4 text-crimson-700 border-2 border-crimson-300 rounded focus:ring-2 focus:ring-crimson-200"
-                    />
-                    <label htmlFor="isPublished" className="ml-2 text-sm font-medium text-gray-700">
-                      Опубликовать
-                    </label>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      type="submit"
-                      className="flex-1 px-4 py-2 bg-crimson-700 text-white rounded-md hover:bg-crimson-800 transition-colors font-semibold"
-                    >
-                      {currentNews ? 'Обновить' : 'Добавить'}
-                    </button>
-                    {currentNews && (
-                      <button
-                        type="button"
-                        onClick={handleNewsCancel}
-                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
-                      >
-                        Отмена
-                      </button>
-                    )}
-                  </div>
-                </form>
-              </motion.div>
-            </div>
-
-            <div className="lg:col-span-2">
-              <h2 className="text-2xl font-display font-bold text-crimson-800 mb-6">Список новостей</h2>
-              <div className="space-y-4">
-                {news.map((newsItem) => (
-                  <div key={newsItem.id} className="folk-card p-6">
-                    <div className="flex gap-4">
-                      {newsItem.image_url && (
-                        <img
-                          src={newsItem.image_url}
-                          alt={newsItem.title}
-                          className="w-32 h-32 object-cover rounded-lg flex-shrink-0"
-                        />
-                      )}
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <h3 className="text-xl font-display font-bold text-crimson-800">
-                              {newsItem.title}
-                            </h3>
-                            <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
-                              <span>{formatDate(newsItem.published_at)}</span>
-                              <span className={`px-2 py-1 rounded ${
-                                newsItem.is_published 
-                                  ? 'bg-green-100 text-green-700' 
-                                  : 'bg-gray-100 text-gray-700'
-                              }`}>
-                                {newsItem.is_published ? 'Опубликовано' : 'Черновик'}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => handleEditNews(newsItem)}
-                              className="px-4 py-2 bg-gold-500 text-crimson-900 rounded-md hover:bg-gold-400 transition-colors text-sm font-semibold"
-                            >
-                              ✏️
-                            </button>
-                            <button
-                              onClick={() => handleDeleteNews(newsItem.id)}
-                              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm font-semibold"
-                            >
-                              🗑️
-                            </button>
-                          </div>
-                        </div>
-                        {newsItem.excerpt && (
-                          <p className="text-gray-700 mb-2">{newsItem.excerpt}</p>
-                        )}
-                        <p className="text-gray-600 text-sm line-clamp-2">{newsItem.content}</p>
-                      </div>
                     </div>
                   </div>
                 ))}

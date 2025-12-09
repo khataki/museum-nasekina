@@ -8,6 +8,7 @@ import programsRoutes from './routes/programs.js';
 import bookingsRoutes from './routes/bookings.js';
 import uploadRoutes from './routes/upload.js';
 import galleryRoutes from './routes/gallery.js';
+import newsRoutes from './routes/news.js';
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.use('/api/programs', programsRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/gallery', galleryRoutes);
+app.use('/api/news', newsRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
