@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import BookingForm from '../components/BookingForm';
+import SEO from "../components/SEO";
 
 const ProgramDetail = () => {
   const { id } = useParams();

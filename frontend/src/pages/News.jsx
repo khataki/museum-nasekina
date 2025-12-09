@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import SEO from "../components/SEO";
 
 const News = () => {
   const navigate = useNavigate();
