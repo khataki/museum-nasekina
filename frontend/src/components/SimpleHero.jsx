@@ -137,25 +137,6 @@ const SimpleHero = () => {
           </div>
         </motion.div>
       </div>
-
-      {/* Скролл индикатор (только на десктопе) */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ 
-          duration: 0.8, 
-          delay: 1.2,
-          repeat: Infinity,
-          repeatType: "reverse",
-          repeatDelay: 0.5
-        }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 hidden md:flex flex-col items-center gap-2"
-      >
-        <span className="text-sm font-medium text-gray-700 drop-shadow-sm">Прокрутите вниз</span>
-        <svg className="w-6 h-6 text-crimson-700 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
-      </motion.div>
     </section>
   );
 };
