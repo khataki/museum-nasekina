@@ -4,120 +4,131 @@ import { Link } from 'react-router-dom';
 
 const SimpleHero = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden py-12 px-4">
-      {/* Фоновое изображение */}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Фоновое изображение с fallback градиентом */}
       <div className="absolute inset-0 z-0">
-        {/* Градиент поверх фото для читаемости текста */}
-        <div className="absolute inset-0 bg-gradient-to-br from-crimson-900/40 via-transparent to-ochre-900/40 z-10"></div>
-        
-        {/* Фото фон */}
+        {/* Попытка загрузить фото */}
         <div 
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: 'url(/hero-bg.jpg)',
+            backgroundImage: `url(/hero-bg.jpg)`,
           }}
         />
         
-        {/* Запасной градиент если фото нет */}
-        <div className="absolute inset-0 bg-gradient-to-br from-sky-200 via-cream-100 to-ochre-100"></div>
+        {/* Fallback градиент (показывается если фото нет или не загрузилось) */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-orange-50 to-red-100"></div>
+        
+        {/* Тёмный оверлей для читаемости текста */}
+        <div className="absolute inset-0 bg-gradient-to-br from-crimson-900/30 via-transparent to-ochre-900/30"></div>
       </div>
 
-      {/* Декоративные узоры (убираем на мобилке) */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 0.15, scale: 1 }}
-        transition={{ duration: 1 }}
-        className="absolute top-0 left-0 w-32 h-32 md:w-64 md:h-64 z-20 pointer-events-none hidden sm:block"
-      >
-        <svg viewBox="0 0 200 200" className="w-full h-full">
-          <circle cx="0" cy="0" r="150" fill="#b91c1c" opacity="0.3"/>
-          <circle cx="0" cy="0" r="100" fill="#ca8a04" opacity="0.2"/>
-        </svg>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 0.15, scale: 1 }}
-        transition={{ duration: 1, delay: 0.2 }}
-        className="absolute bottom-0 right-0 w-32 h-32 md:w-64 md:h-64 z-20 pointer-events-none hidden sm:block"
-      >
-        <svg viewBox="0 0 200 200" className="w-full h-full">
-          <circle cx="200" cy="200" r="150" fill="#b91c1c" opacity="0.3"/>
-          <circle cx="200" cy="200" r="100" fill="#ca8a04" opacity="0.2"/>
-        </svg>
-      </motion.div>
-
-      {/* Контент Hero */}
-      <div className="relative z-30 container mx-auto px-4 w-full max-w-5xl">
+      {/* Декоративные элементы (скрыты на мобилке) */}
+      <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden hidden lg:block">
+        {/* Левый верхний угол */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, scale: 0.5, rotate: -45 }}
+          animate={{ opacity: 0.1, scale: 1, rotate: 0 }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+          className="absolute -top-32 -left-32 w-96 h-96"
+        >
+          <svg viewBox="0 0 400 400" className="w-full h-full">
+            <circle cx="200" cy="200" r="180" fill="#b91c1c" />
+            <circle cx="200" cy="200" r="120" fill="#ca8a04" opacity="0.6"/>
+            <circle cx="200" cy="200" r="60" fill="#b91c1c" opacity="0.4"/>
+          </svg>
+        </motion.div>
+
+        {/* Правый нижний угол */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5, rotate: 45 }}
+          animate={{ opacity: 0.1, scale: 1, rotate: 0 }}
+          transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+          className="absolute -bottom-32 -right-32 w-96 h-96"
+        >
+          <svg viewBox="0 0 400 400" className="w-full h-full">
+            <circle cx="200" cy="200" r="180" fill="#ca8a04" />
+            <circle cx="200" cy="200" r="120" fill="#b91c1c" opacity="0.6"/>
+            <circle cx="200" cy="200" r="60" fill="#ca8a04" opacity="0.4"/>
+          </svg>
+        </motion.div>
+      </div>
+
+      {/* Контент */}
+      <div className="relative z-20 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1, ease: "easeOut" }}
           className="text-center"
         >
           {/* Glassmorphism карточка */}
-          <div className="backdrop-blur-xl bg-white/50 rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-12 lg:p-16 border border-white/60 shadow-2xl">
+          <div className="backdrop-blur-2xl bg-white/60 rounded-3xl p-8 sm:p-10 md:p-14 lg:p-20 border border-white/70 shadow-2xl">
+            {/* Заголовок */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
             >
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold text-crimson-900 mb-4 md:mb-6 drop-shadow-md leading-tight">
-                Музей истории<br className="hidden sm:block" />{' '}
-                <span className="sm:hidden"> </span>
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-display font-bold text-crimson-900 mb-6 leading-[1.1] tracking-tight">
+                Музей истории
+                <br />
                 крестьянского быта
               </h1>
             </motion.div>
             
+            {/* Декоративная линия */}
             <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="flex justify-center mb-4 md:mb-8"
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+              className="flex justify-center mb-8"
             >
-              <div className="h-0.5 md:h-1 w-32 md:w-48 bg-gradient-to-r from-transparent via-crimson-600 to-transparent rounded-full"></div>
+              <div className="h-1 w-40 md:w-56 bg-gradient-to-r from-transparent via-crimson-600 to-transparent rounded-full shadow-sm"></div>
             </motion.div>
             
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-800 mb-3 md:mb-4 font-semibold"
-            >
-              д. Насекина, Тюменская область
-            </motion.p>
-            
+            {/* Подзаголовок */}
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 mb-6 md:mb-10 leading-relaxed max-w-2xl mx-auto px-2"
+              className="text-xl sm:text-2xl md:text-3xl text-crimson-800 mb-6 font-semibold tracking-wide"
             >
-              Погрузитесь в атмосферу сибирской деревни XIX-XX веков. 
+              д. Насекина, Тюменская область
+            </motion.p>
+            
+            {/* Описание */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+              className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-800 mb-10 md:mb-12 leading-relaxed max-w-3xl mx-auto font-medium"
+            >
+              Погрузитесь в атмосферу сибирской деревни XIX–XX веков. 
               Познакомьтесь с традициями, бытом и ремёслами наших предков.
             </motion.p>
             
+            {/* Кнопки */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
-              className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center"
+              transition={{ duration: 0.8, delay: 0.8 }}
+              className="flex flex-col sm:flex-row gap-4 md:gap-5 justify-center items-stretch sm:items-center"
             >
-              <Link to="/programs" className="w-full sm:w-auto">
+              <Link to="/programs" className="group">
                 <motion.button
-                  whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(185, 28, 28, 0.3)" }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-full sm:w-auto px-6 md:px-10 py-3 md:py-4 bg-gradient-to-r from-crimson-700 to-crimson-900 text-white rounded-xl font-semibold text-base md:text-lg shadow-lg hover:shadow-2xl transition-all"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full sm:w-auto px-8 md:px-12 py-4 md:py-5 bg-gradient-to-r from-crimson-700 to-crimson-900 text-white rounded-2xl font-bold text-base md:text-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:from-crimson-800 hover:to-crimson-950"
                 >
                   Наши программы
                 </motion.button>
               </Link>
               
-              <Link to="/about" className="w-full sm:w-auto">
+              <Link to="/about" className="group">
                 <motion.button
-                  whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 255, 255, 0.8)" }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-full sm:w-auto px-6 md:px-10 py-3 md:py-4 bg-white/60 backdrop-blur-sm text-crimson-900 rounded-xl border-2 border-crimson-700 font-semibold text-base md:text-lg hover:bg-white/80 transition-all shadow-lg"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full sm:w-auto px-8 md:px-12 py-4 md:py-5 bg-white/70 backdrop-blur-sm text-crimson-900 rounded-2xl border-2 border-crimson-700 font-bold text-base md:text-lg hover:bg-white/90 hover:border-crimson-800 transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
                   О музее
                 </motion.button>
@@ -126,6 +137,25 @@ const SimpleHero = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Скролл индикатор (только на десктопе) */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ 
+          duration: 0.8, 
+          delay: 1.2,
+          repeat: Infinity,
+          repeatType: "reverse",
+          repeatDelay: 0.5
+        }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 hidden md:flex flex-col items-center gap-2"
+      >
+        <span className="text-sm font-medium text-gray-700 drop-shadow-sm">Прокрутите вниз</span>
+        <svg className="w-6 h-6 text-crimson-700 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </motion.div>
     </section>
   );
 };
