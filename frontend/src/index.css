@@ -1,10 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 @layer base {
   body {
-    @apply bg-cream-50 text-gray-900 font-body;
+    @apply font-sans antialiased;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -13,201 +13,70 @@
 }
 
 @layer components {
-  /* Орнаментальная рамка */
-  .ornament-border {
-    position: relative;
-    padding: 2rem;
-  }
-  
-  .ornament-border::before,
-  .ornament-border::after {
-    content: '';
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    background-image: 
-      repeating-linear-gradient(45deg, #b91c1c 0, #b91c1c 2px, transparent 2px, transparent 8px),
-      repeating-linear-gradient(-45deg, #b91c1c 0, #b91c1c 2px, transparent 2px, transparent 8px);
-  }
-  
-  .ornament-border::before {
-    top: 0;
-    left: 0;
-    border-top: 3px solid #b91c1c;
-    border-left: 3px solid #b91c1c;
-  }
-  
-  .ornament-border::after {
-    bottom: 0;
-    right: 0;
-    border-bottom: 3px solid #b91c1c;
-    border-right: 3px solid #b91c1c;
-  }
-
-  /* Геометрический паттерн для фона */
-  .geometric-pattern {
-    background-color: #fef8f0;
-    background-image: 
-      repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 10px,
-        rgba(185, 28, 28, 0.03) 10px,
-        rgba(185, 28, 28, 0.03) 20px
-      ),
-      repeating-linear-gradient(
-        -45deg,
-        transparent,
-        transparent 10px,
-        rgba(217, 119, 6, 0.03) 10px,
-        rgba(217, 119, 6, 0.03) 20px
-      );
-  }
-
-  /* Стилизованная карточка */
+  /* Народные карточки */
   .folk-card {
-    @apply bg-white rounded-lg shadow-lg overflow-hidden;
-    @apply border-4 border-crimson-700;
-    position: relative;
-  }
-  
-  .folk-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 8px;
-    background: linear-gradient(
-      90deg,
-      #b91c1c 0%,
-      #d97706 25%,
-      #b91c1c 50%,
-      #d97706 75%,
-      #b91c1c 100%
-    );
+    @apply bg-white rounded-lg shadow-md border-2 border-ochre-200 transition-all duration-300;
   }
 
-  /* Кнопка в народном стиле */
+  .folk-card:hover {
+    @apply shadow-xl border-crimson-300;
+  }
+
+  /* Кнопки */
   .folk-button {
-    @apply px-8 py-4 bg-crimson-700 text-white font-semibold;
-    @apply rounded-md shadow-lg hover:bg-crimson-800 transition-all duration-300;
-    @apply border-2 border-gold-500;
-    position: relative;
+    @apply bg-gradient-to-r from-crimson-700 to-crimson-900 text-white px-6 py-3 rounded-md font-semibold hover:from-crimson-800 hover:to-crimson-950 transition-all duration-200 shadow-md hover:shadow-lg;
+  }
+
+  /* Орнамент-разделитель */
+  .ornament-divider {
+    @apply h-1 w-32 bg-gradient-to-r from-crimson-600 via-gold-500 to-crimson-600 rounded-full mx-auto my-8;
+  }
+
+  /* Геометрический узор фона */
+  .geometric-pattern {
+    @apply absolute inset-0 opacity-10;
+    background-image: 
+      repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(185, 28, 28, 0.1) 35px, rgba(185, 28, 28, 0.1) 70px),
+      repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(202, 138, 4, 0.1) 35px, rgba(202, 138, 4, 0.1) 70px);
+  }
+
+  /* Glassmorphism карточки */
+  .glass-card {
+    @apply backdrop-blur-lg bg-white/40 rounded-2xl border border-white/50 shadow-xl;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2));
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:bg-white/50 hover:shadow-2xl hover:scale-[1.02];
+  }
+
+  /* Обновленные градиенты */
+  .gradient-crimson {
+    background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
+  }
+
+  .gradient-gold {
+    background: linear-gradient(135deg, #d97706 0%, #ca8a04 100%);
+  }
+
+  .gradient-warm {
+    background: linear-gradient(135deg, #fef8f0 0%, #fde68a 100%);
+  }
+
+  /* Улучшенные тени */
+  .shadow-ornament {
+    box-shadow: 
+      0 10px 30px -5px rgba(185, 28, 28, 0.3),
+      0 0 0 1px rgba(185, 28, 28, 0.05);
+  }
+}
+
+/* Утилиты */
+@layer utilities {
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  
-  .folk-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.2),
-      transparent
-    );
-    transition: left 0.5s;
-  }
-  
-  .folk-button:hover::before {
-    left: 100%;
-  }
-
-  /* Разделитель с орнаментом */
-  .ornament-divider {
-    height: 4px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      #b91c1c 15%,
-      #d97706 50%,
-      #b91c1c 85%,
-      transparent 100%
-    );
-    position: relative;
-  }
-  
-  .ornament-divider::after {
-    content: '❖';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.5rem;
-    color: #b91c1c;
-    background: #fef8f0;
-    padding: 0 1rem;
-  }
-
-  /* Текстура дерева для фонов */
-  .wood-texture {
-    background-color: #8b5a2b;
-    background-image: 
-      linear-gradient(90deg, rgba(139, 90, 43, 0.1) 50%, transparent 50%),
-      linear-gradient(rgba(139, 90, 43, 0.1) 50%, transparent 50%);
-    background-size: 4px 4px;
-  }
-}
-
-@layer utilities {
-  .text-shadow-folk {
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  }
-  
-  .animation-delay-200 {
-    animation-delay: 200ms;
-  }
-  
-  .animation-delay-400 {
-    animation-delay: 400ms;
-  }
-  
-  .animation-delay-600 {
-    animation-delay: 600ms;
-  }
-}
-
-/* === GLASSMORPHISM КАРТОЧКИ === */
-.glass-card {
-  @apply backdrop-blur-lg bg-white/40 rounded-2xl border border-white/50 shadow-xl;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2));
-}
-
-.glass-card-hover {
-  @apply glass-card transition-all duration-300 hover:bg-white/50 hover:shadow-2xl hover:scale-[1.02];
-}
-
-/* === ОБНОВЛЕННЫЕ ГРАДИЕНТЫ === */
-.gradient-crimson {
-  background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
-}
-
-.gradient-gold {
-  background: linear-gradient(135deg, #d97706 0%, #ca8a04 100%);
-}
-
-.gradient-warm {
-  background: linear-gradient(135deg, #fef8f0 0%, #fde68a 100%);
-}
-
-/* === АНИМИРОВАННЫЕ ОРНАМЕНТЫ === */
-@keyframes draw-ornament {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-.ornament-animated {
-  animation: draw-ornament 2s ease-out forwards;
-}
-
-/* === УЛУЧШЕННЫЕ ТЕНИ === */
-.shadow-ornament {
-  box-shadow: 
-    0 10px 30px -5px rgba(185, 28, 28, 0.3),
-    0 0 0 1px rgba(185, 28, 28, 0.05);
 }
