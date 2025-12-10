@@ -24,7 +24,7 @@
 
   /* Кнопки */
   .folk-button {
-    @apply bg-gradient-to-r from-crimson-700 to-crimson-900 text-white px-6 py-3 rounded-md font-semibold hover:from-crimson-800 hover:to-crimson-950 transition-all duration-200 shadow-md hover:shadow-lg;
+    @apply bg-gradient-to-r from-crimson-700 to-crimson-900 text-white px-6 py-3 rounded-md font-semibold hover:from-crimson-800 hover:to-crimson-900 transition-all duration-200 shadow-md hover:shadow-lg;
   }
 
   /* Орнамент-разделитель */
