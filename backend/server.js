@@ -1,92 +1,43 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
-import programsRoutes from './routes/programs.js';
-import bookingsRoutes from './routes/bookings.js';
-import uploadRoutes from './routes/upload.js';
-import galleryRoutes from './routes/gallery.js';
+import programRoutes from './routes/programs.js';
 import newsRoutes from './routes/news.js';
+import galleryRoutes from './routes/gallery.js';
+import bookingRoutes from './routes/bookings.js';
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
 
-// Middleware
+// CORS - разрешаем Vercel и localhost
 app.use(cors({
   origin: [
-    'https://museum-nasekina.vercel.app',  // Подставь свой Vercel URL!
-    'http://localhost:3000'
+    'https://museum-nasekina.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5173'
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Статические файлы для загруженных изображений
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Логирование запросов в режиме разработки
-if (process.env.NODE_ENV === 'development') {
-  app.use((req, res, next) => {
-    console.log(`${req.method} ${req.path}`);
-    next();
-  });
-}
-
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/programs', programsRoutes);
-app.use('/api/bookings', bookingsRoutes);
-app.use('/api/upload', uploadRoutes);
-app.use('/api/gallery', galleryRoutes);
-app.use('/api/news', newsRoutes);
-
-// Health check endpoint
+// Health check
 app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
+  res.json({ status: 'ok', message: 'Server is running' });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Route not found'
-  });
-});
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/programs', programRoutes);
+app.use('/api/news', newsRoutes);
+app.use('/api/gallery', galleryRoutes);
+app.use('/api/bookings', bookingRoutes);
 
-// Error handler
-app.use((err, req, res, next) => {
-  console.error('Ошибка сервера:', err);
-  res.status(500).json({
-    success: false,
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
-  });
-});
-
-// Запуск сервера
 app.listen(PORT, () => {
-  console.log(`
-╔═══════════════════════════════════════════════╗
-║                                               ║
-║   🏛️  Музей истории крестьянского быта       ║
-║                                               ║
-║   🚀 Сервер запущен на порту ${PORT}            ║
-║   📍 http://localhost:${PORT}                   ║
-║   🌍 Окружение: ${process.env.NODE_ENV || 'development'}              ║
-║                                               ║
-╚═══════════════════════════════════════════════╝
-  `);
+  console.log(`🚀 Сервер запущен на порту ${PORT}`);
 });
-
-export default app;
