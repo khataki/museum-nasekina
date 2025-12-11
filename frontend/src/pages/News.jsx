@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import SEO from "../components/SEO";
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import SEO from '../components/SEO';
 
 const News = () => {
   const navigate = useNavigate();
@@ -15,20 +15,23 @@ const News = () => {
 
   const fetchNews = async () => {
     try {
-      const response = await axios.get("/api/news?limit=100");
-      setNews(response.data.news);
+      const response = await axios.get('/api/news?limit=100');
+      const newsData = response.data?.news || [];
+      setNews(Array.isArray(newsData) ? newsData : []);
     } catch (error) {
-      console.error("Ошибка загрузки новостей:", error);
+      console.error('Ошибка загрузки новостей:', error);
+      setNews([]);
     } finally {
       setLoading(false);
     }
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("ru-RU", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('ru-RU', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   };
 
@@ -42,11 +45,12 @@ const News = () => {
 
   return (
     <div className="min-h-screen bg-cream-50 py-12">
-      <SEO
+      <SEO 
         title="Новости"
         description="Актуальные новости и события музея истории крестьянского быта в д. Насекина"
         url="https://museum-nasekina.ru/news"
       />
+      
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -56,13 +60,13 @@ const News = () => {
           <h1 className="text-5xl md:text-6xl font-display font-bold text-crimson-800 mb-4">
             Новости
           </h1>
-          <div className="ornament-divider max-w-md mx-auto mb-6"></div>
+          <div className="h-1 w-32 bg-gradient-to-r from-transparent via-crimson-600 to-transparent rounded-full mx-auto mb-6"></div>
           <p className="text-xl text-gray-700 max-w-2xl mx-auto">
             Все события и новости нашего музея
           </p>
         </motion.div>
 
-        {news.length === 0 ? (
+        {!news || news.length === 0 ? (
           <div className="text-center py-12 text-gray-500">
             <p className="text-lg">Новости пока не добавлены</p>
           </div>
@@ -98,18 +102,8 @@ const News = () => {
                   </p>
                   <div className="flex items-center text-crimson-700 font-semibold group-hover:translate-x-2 transition-transform">
                     Читать далее
-                    <svg
-                      className="w-5 h-5 ml-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
+                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
                 </div>
