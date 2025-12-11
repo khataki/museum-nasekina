@@ -12,7 +12,6 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// CORS - разрешаем Vercel и localhost
 app.use(cors({
   origin: [
     'https://museum-nasekina.vercel.app',
@@ -26,12 +25,14 @@ app.use(cors({
 
 app.use(express.json());
 
-// Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Server is running' });
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
-// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/programs', programRoutes);
 app.use('/api/news', newsRoutes);
