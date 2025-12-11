@@ -15,15 +15,19 @@ const NewsSection = () => {
   const fetchNews = async () => {
     try {
       const response = await axios.get('/api/news?limit=3');
-      setNews(response.data.news);
+      // Безопасная проверка на массив
+      const newsData = response.data?.news || [];
+      setNews(Array.isArray(newsData) ? newsData : []);
     } catch (error) {
       console.error('Ошибка загрузки новостей:', error);
+      setNews([]); // Устанавливаем пустой массив при ошибке
     } finally {
       setLoading(false);
     }
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('ru-RU', {
       year: 'numeric',
       month: 'long',
@@ -31,7 +35,8 @@ const NewsSection = () => {
     });
   };
 
-  if (loading || news.length === 0) {
+  // Не показываем секцию если идёт загрузка или нет новостей
+  if (loading || !news || news.length === 0) {
     return null;
   }
 
@@ -47,7 +52,7 @@ const NewsSection = () => {
           <h2 className="text-4xl md:text-5xl font-display font-bold text-crimson-800 mb-4">
             Новости музея
           </h2>
-          <div className="ornament-divider max-w-md mx-auto"></div>
+          <div className="h-1 w-32 bg-gradient-to-r from-transparent via-crimson-600 to-transparent rounded-full mx-auto"></div>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -91,7 +96,6 @@ const NewsSection = () => {
           ))}
         </div>
 
-        {/* Кнопка "Все новости" если хотим */}
         {news.length >= 3 && (
           <motion.div
             initial={{ opacity: 0 }}
